@@ -1,0 +1,12 @@
+opencollection: 1.0.0
+info:
+  name: "x-clone-workspace"
+  type: workspace
+
+collections:
+  - name: "x-clone-api"
+    path: "collections/x-clone-api"
+
+specs:
+
+docs: ''
