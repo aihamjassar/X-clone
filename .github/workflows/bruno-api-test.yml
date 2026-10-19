@@ -1,0 +1,22 @@
+name: Bruno API Test
+
+on:
+  push:
+    branches: [main]
+    paths: ["server/**"]
+  pull_request:
+    branches: [main]
+    paths: ["server/**"]
+
+jobs:
+  api-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Run Bruno API Tests
+        uses: usebruno/bruno-cli-action@v1
+        with:
+          working-directory: server/api-tests/collections/x-clone-api
+          command: "run --env development"
