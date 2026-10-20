@@ -19,4 +19,4 @@ jobs:
         uses: usebruno/bruno-cli-action@v1
         with:
           working-directory: server/api-tests/collections/x-clone-api
-          command: "run --env development"
+          command: "run --env Development"
