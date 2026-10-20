@@ -1,3 +1,4 @@
+const Notification = require("../models/notification.model");
 const User = require("../models/user.model");
 
 exports.getUserProfile = async (req, res) => {
@@ -14,10 +15,10 @@ exports.getUserProfile = async (req, res) => {
   }
 };
 
-exports.getSuggested = async (req, res) => {
+exports.getSuggestedUsers = async (req, res) => {
   try {
   } catch (error) {
-    console.error("Error in getSuggested controller:", error.message);
+    console.error("Error in getSuggestedUsers controller:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
@@ -43,6 +44,12 @@ exports.followUnfollowUser = async (req, res) => {
       await User.findByIdAndUpdate(req.user._id, { $push: { following: id } });
       await User.findByIdAndUpdate(id, { $push: { followers: req.user._id } });
       //   Send notification to the user
+      const newNotification = new Notification({
+        type: "follow",
+        from: currentUser._id,
+        to: userToModify._id,
+      });
+      await newNotification.save();
       res.status(200).json({ message: "User followed successfully" });
     }
   } catch (error) {
