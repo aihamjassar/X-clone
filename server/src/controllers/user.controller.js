@@ -17,6 +17,36 @@ exports.getUserProfile = async (req, res) => {
 
 exports.getSuggestedUsers = async (req, res) => {
   try {
+    const userId = req.user._id;
+
+    const me = await User.findById(userId).select("following").lean();
+    if (!me) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const usersFollowedByMe = me?.following ?? [];
+
+    const suggestedUsers = await User.aggregate([
+      {
+        $match: {
+          _id: { $nin: [me._id, ...usersFollowedByMe] },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          username: 1,
+          fullName: 1,
+          profileImg: 1,
+        },
+      },
+      { $sample: { size: 5 } },
+      {
+        $sort: { username: 1 },
+      },
+    ]);
+
+    res.status(200).json(suggestedUsers);
   } catch (error) {
     console.error("Error in getSuggestedUsers controller:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
