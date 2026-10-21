@@ -1,8 +1,15 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
+const { v2: cloudinary } = require("cloudinary");
 
 const authRoutes = require("./routes/auth.route");
 const userRoutes = require("./routes/user.route");
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const app = express();
 

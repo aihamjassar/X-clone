@@ -1,3 +1,6 @@
+const bcrypt = require("bcryptjs");
+const cloudinary = require("cloudinary");
+
 const Notification = require("../models/notification.model");
 const User = require("../models/user.model");
 
@@ -90,6 +93,99 @@ exports.followUnfollowUser = async (req, res) => {
 
 exports.updateUserProfile = async (req, res) => {
   try {
+    const {
+      username,
+      email,
+      fullName,
+      bio,
+      link,
+      currentPassword,
+      newPassword,
+    } = req.body;
+    let { profileImg, coverImg } = req.body;
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    if (username) {
+      const existingUser = await User.findOne({ username });
+      if (existingUser) {
+        return res.status(400).json({ error: "Username is already taken" });
+      }
+    }
+
+    if (email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ error: "Invalid email format" });
+      }
+
+      const existingEmail = await User.findOne({ email });
+      if (existingEmail) {
+        return res.status(400).json({ error: "Email is already taken" });
+      }
+    }
+
+    if (
+      (!currentPassword && newPassword) ||
+      (currentPassword && !newPassword)
+    ) {
+      return res.status(400).json({
+        error: "Please provide both current password and new password",
+      });
+    }
+
+    let hashedPassword;
+    if (currentPassword && newPassword) {
+      const isMatch = await bcrypt.compare(currentPassword, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ error: "Current password is incorrect" });
+      }
+
+      if (newPassword.length < 6) {
+        return res
+          .status(400)
+          .json({ error: "Password must be at least 6 characters long" });
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      hashedPassword = await bcrypt.hash(newPassword, salt);
+    }
+
+    if (profileImg) {
+      if (user.profileImg) {
+        await cloudinary.uploader.destroy(
+          user.profileImg.split("/").pop().split(".")[0],
+        );
+      }
+      const uploadedResponse = await cloudinary.uploader.upload(profileImg);
+      profileImg = uploadedResponse.secret_url;
+    }
+
+    if (coverImg) {
+      if (user.coverImg) {
+        await cloudinary.uploader.destroy(
+          user.coverImg.split("/").pop().split(".")[0],
+        );
+      }
+      const uploadedResponse = await cloudinary.uploader.upload(coverImg);
+      coverImg = uploadedResponse.secret_url;
+    }
+
+    const updatedUser = await User.findOneAndUpdate(user._id, {
+      username: username || user.username,
+      fullName: fullName || user.fullName,
+      email: email || user.email,
+      password: hashedPassword || user.password,
+      bio: bio || user.bio,
+      link: link || user.link,
+      profileImg: profileImg || user.profileImg,
+      coverImg: coverImg || user.coverImg,
+    }).select("-password");
+
+    res.status(200).json(updatedUser);
   } catch (error) {
     console.error("Error in updateUserProfile controller:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
