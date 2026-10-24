@@ -19,7 +19,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: true
+          cache: npm
 
       - name: Install dependencies
         working-directory: server
