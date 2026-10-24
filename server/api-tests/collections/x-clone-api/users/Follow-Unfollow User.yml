@@ -1,0 +1,16 @@
+info:
+  name: Follow/Unfollow User
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{base_url}}/users/follow/6ad62d0d64f614e7672f82e4"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

@@ -1,0 +1,25 @@
+info:
+  name: Update User Profile
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{base_url}}/users/update"
+  body:
+    type: json
+    data: |-
+      {
+        "currentPassword": "1234567",
+        "newPassword": "123456",
+        "bio": "Hi, I'm John Doe",
+        "link": "johndoe.com"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
