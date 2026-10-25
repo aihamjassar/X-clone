@@ -5,6 +5,7 @@ const { v2: cloudinary } = require("cloudinary");
 const authRoutes = require("./routes/auth.route");
 const userRoutes = require("./routes/user.route");
 const postRoutes = require("./routes/post.route");
+const notificationRoutes = require("./routes/notification.route");
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -25,5 +26,6 @@ app.get("/api/v1/health", (req, res) => {
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/posts", postRoutes);
+app.use("/api/v1/notification", notificationRoutes);
 
 module.exports = app;
