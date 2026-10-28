@@ -4,7 +4,7 @@ import {
   LockIcon,
   MailIcon,
   PencilLineIcon,
-  User2Icon,
+  User2Icon
 } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router";
