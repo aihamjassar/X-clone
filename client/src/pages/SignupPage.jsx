@@ -1,4 +1,11 @@
-import { Eye, EyeOff, Lock, Mail, PencilLine, User2 } from "lucide-react";
+import {
+  EyeIcon,
+  EyeOffIcon,
+  LockIcon,
+  MailIcon,
+  PencilLineIcon,
+  User2Icon,
+} from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router";
 import { XSvg } from "../components/svgs/X";
@@ -66,7 +73,7 @@ export function SignupPage() {
                   onChange={handleInputChange}
                 />
                 <InputGroupAddon>
-                  <PencilLine />
+                  <PencilLineIcon />
                 </InputGroupAddon>
               </InputGroup>
             </Field>
@@ -84,7 +91,7 @@ export function SignupPage() {
                   onChange={handleInputChange}
                 />
                 <InputGroupAddon>
-                  <User2 />
+                  <User2Icon />
                 </InputGroupAddon>
               </InputGroup>
             </Field>
@@ -103,7 +110,7 @@ export function SignupPage() {
                   onChange={handleInputChange}
                 />
                 <InputGroupAddon>
-                  <Mail />
+                  <MailIcon />
                 </InputGroupAddon>
               </InputGroup>
             </Field>
@@ -122,7 +129,7 @@ export function SignupPage() {
                   onChange={handleInputChange}
                 />
                 <InputGroupAddon>
-                  <Lock />
+                  <LockIcon />
                 </InputGroupAddon>
                 <InputGroupAddon align="inline-end">
                   <InputGroupButton
@@ -131,7 +138,7 @@ export function SignupPage() {
                     className="cursor-pointer"
                     onClick={() => setShowPassword((prev) => !prev)}
                   >
-                    {showPassword ? <EyeOff /> : <Eye />}
+                    {showPassword ? <EyeOffIcon /> : <EyeIcon />}
                   </InputGroupButton>
                 </InputGroupAddon>
               </InputGroup>

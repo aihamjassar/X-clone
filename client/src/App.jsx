@@ -3,15 +3,23 @@ import { HomePage } from "./pages/HomePage";
 import { SignupPage } from "./pages/SignupPage";
 import { LoginPage } from "./pages/LoginPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
+import { Sidebar } from "./components/common/Sidebar";
+import { RightPanel } from "./components/common/RightPanel";
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/signup" element={<SignupPage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="*" element={<NotFoundPage />} />
-    </Routes>
+    <div className="flex max-w-6xl mx-auto">
+      <Sidebar />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/notifications" element={<></>} />
+        <Route path="/profile/:username" element={<></>} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+      <RightPanel />
+    </div>
   );
 }
 

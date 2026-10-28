@@ -1,6 +1,8 @@
+import { EyeIcon, EyeOffIcon, LockIcon, MailIcon } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router";
 import { XSvg } from "../components/svgs/X";
+import { Button } from "../components/ui/button";
 import {
   Field,
   FieldError,
@@ -13,8 +15,6 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "../components/ui/input-group";
-import { Eye, EyeOff, Lock, Mail } from "lucide-react";
-import { Button } from "../components/ui/button";
 
 const INITIAL_FORM_DATA = {
   email: "",
@@ -64,7 +64,7 @@ export function LoginPage() {
                   onChange={handleInputChange}
                 />
                 <InputGroupAddon>
-                  <Mail />
+                  <MailIcon />
                 </InputGroupAddon>
               </InputGroup>
             </Field>
@@ -83,7 +83,7 @@ export function LoginPage() {
                   onChange={handleInputChange}
                 />
                 <InputGroupAddon>
-                  <Lock />
+                  <LockIcon />
                 </InputGroupAddon>
                 <InputGroupAddon align="inline-end">
                   <InputGroupButton
@@ -92,7 +92,7 @@ export function LoginPage() {
                     className="cursor-pointer"
                     onClick={() => setShowPassword((prev) => !prev)}
                   >
-                    {showPassword ? <EyeOff /> : <Eye />}
+                    {showPassword ? <EyeOffIcon /> : <EyeIcon />}
                   </InputGroupButton>
                 </InputGroupAddon>
               </InputGroup>
