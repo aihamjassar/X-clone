@@ -1,4 +1,4 @@
-import { USERS_FOR_RIGHT_PANEL } from "../../utils/db/db";
+import { USERS_FOR_RIGHT_PANEL } from "../../utils/db/dummy";
 import { Link } from "react-router";
 import { Button } from "../ui/button";
 import { RightPanelSkeleton } from "../skeletons/RightPanelSkeleton";

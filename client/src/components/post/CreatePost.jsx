@@ -39,9 +39,12 @@ export function CreatePost() {
           <img src={data.profileImg || "/avatar-placeholder.png"} alt="" />
         </div>
       </div>
-      <form className="flex flex-col gap-2 w-full" onSubmit={handleSubmit}>
+      <form
+        className="bg-black flex flex-col gap-2 w-full"
+        onSubmit={handleSubmit}
+      >
         <Textarea
-          className="w-full h-44 text-lg resize-none border-none focus:outline-none border-gray-800"
+          className="w-full h-44 text-lg resize-none border-none focus-visible:ring-0 focus-visible:outline-none"
           placeholder="What is happing?"
           value={text}
           onChange={(e) => setText(e.target.value)}
@@ -77,7 +80,11 @@ export function CreatePost() {
             ref={imgRef}
             onChange={handleImgChange}
           />
-          <Button type="button" size="sm" className="rounded-ful px-4 cursor-pointer">
+          <Button
+            type="submit"
+            size="sm"
+            className="rounded-ful px-4 cursor-pointer"
+          >
             {isPending ? "Posting..." : "Post"}
           </Button>
         </div>
