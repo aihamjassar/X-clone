@@ -6,6 +6,7 @@ import { NotFoundPage } from "./pages/NotFoundPage";
 import { Sidebar } from "./components/common/Sidebar";
 import { RightPanel } from "./components/common/RightPanel";
 import { NotificationPage } from "./pages/NotificationPage";
+import { ProfilePage } from "./pages/ProfilePage";
 
 function App() {
   return (
@@ -16,7 +17,7 @@ function App() {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/notifications" element={<NotificationPage />} />
-        <Route path="/profile/:username" element={<></>} />
+        <Route path="/profile/:username" element={<ProfilePage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
       <RightPanel />

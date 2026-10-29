@@ -39,10 +39,7 @@ export function CreatePost() {
           <img src={data.profileImg || "/avatar-placeholder.png"} alt="" />
         </div>
       </div>
-      <form
-        className="bg-black flex flex-col gap-2 w-full"
-        onSubmit={handleSubmit}
-      >
+      <form className="flex flex-col gap-2 w-full" onSubmit={handleSubmit}>
         <Textarea
           className="w-full h-44 text-lg resize-none border-none focus-visible:ring-0 focus-visible:outline-none"
           placeholder="What is happing?"
