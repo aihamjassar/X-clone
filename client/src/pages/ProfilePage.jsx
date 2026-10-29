@@ -33,7 +33,7 @@ export function ProfilePage() {
   };
 
   const handleImgChange = (e, state) => {
-    const file = e.target.file[0];
+    const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
@@ -84,12 +84,14 @@ export function ProfilePage() {
 
                 <input
                   type="file"
+                  accept="images/*"
                   hidden
                   ref={coverImgRef}
                   onChange={(e) => handleImgChange(e, "coverImg")}
                 />
                 <input
                   type="file"
+                  accept="images/*"
                   hidden
                   ref={profileImgRef}
                   onChange={(e) => handleImgChange(e, "profileImg")}
