@@ -4,7 +4,7 @@ import {
   LockIcon,
   MailIcon,
   PencilLineIcon,
-  User2Icon
+  UserIcon,
 } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router";
@@ -91,7 +91,7 @@ export function SignupPage() {
                   onChange={handleInputChange}
                 />
                 <InputGroupAddon>
-                  <User2Icon />
+                  <UserIcon />
                 </InputGroupAddon>
               </InputGroup>
             </Field>

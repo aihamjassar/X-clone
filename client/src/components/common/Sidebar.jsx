@@ -1,4 +1,4 @@
-import { BellIcon, HomeIcon, LogOutIcon, User2Icon } from "lucide-react";
+import { BellIcon, HomeIcon, LogOutIcon, UserIcon } from "lucide-react";
 import { Link } from "react-router";
 import { XSvg } from "../svgs/X";
 
@@ -21,7 +21,7 @@ const SIDEBAR_ITEMS = [
   },
   {
     href: `/profile/${data.username}`,
-    Icon: User2Icon,
+    Icon: UserIcon,
     text: "Profile",
   },
 ];
