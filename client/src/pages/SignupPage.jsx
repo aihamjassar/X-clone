@@ -23,6 +23,9 @@ import {
   InputGroupInput,
 } from "../components/ui/input-group";
 
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "../components/ui/toast";
+
 const INITIAL_FORM_DATA = {
   fullName: "",
   username: "",
@@ -33,8 +36,34 @@ const INITIAL_FORM_DATA = {
 export function SignupPage() {
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
   const [showPassword, setShowPassword] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { mutate, isPending, isError, error } = useMutation({
+    mutationFn: async ({ fullName, username, email, password }) => {
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_BASE_URL}/auth/signup`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ fullName, username, email, password }),
+          },
+        );
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data?.error || "Failed to sign up");
+
+        return data;
+      } catch (error) {
+        console.error("Failed to sign up:", error.message);
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      toast.add({ type: "success", description: "User created successfully" });
+    },
+  });
 
   const handleInputChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -42,7 +71,7 @@ export function SignupPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log({ formData });
+    mutate(formData);
     setFormData(INITIAL_FORM_DATA);
   };
 
@@ -146,12 +175,12 @@ export function SignupPage() {
             <Field>
               <Button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isPending}
                 className="cursor-pointer"
               >
-                {isSubmitting ? "Signing up..." : "Sign up"}
+                {isPending ? "Signing up..." : "Sign up"}
               </Button>
-              {isError && <FieldError>Something went wrong</FieldError>}
+              {isError && <FieldError>{error?.message}</FieldError>}
             </Field>
             <Field>
               <p className="text-white text-md">Already have an account?</p>

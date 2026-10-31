@@ -1,19 +1,19 @@
 import {
-    BookmarkIcon,
-    HeartIcon,
-    MessageCircleIcon,
-    Repeat2Icon,
-    TrashIcon,
+  BookmarkIcon,
+  HeartIcon,
+  MessageCircleIcon,
+  Repeat2Icon,
+  TrashIcon,
 } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router";
 import { Button } from "../ui/button";
 import {
-    Dialog,
-    DialogContent,
-    DialogFooter,
-    DialogHeader,
-    DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTrigger,
 } from "../ui/dialog";
 import { Spinner } from "../ui/spinner";
 import { Textarea } from "../ui/textarea";
@@ -66,7 +66,7 @@ export function Post({ post }) {
               <span className="flex-1 flex justify-end">
                 <TrashIcon
                   className="cursor-pointer hover:text-red-500"
-                  oncClick={handleDeletePost}
+                  onClick={handleDeletePost}
                 />
               </span>
             )}

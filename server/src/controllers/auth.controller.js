@@ -15,17 +15,21 @@ exports.checkAuth = async (req, res) => {
 exports.signup = async (req, res) => {
   try {
     const { fullName, username, email, password } = req.body;
+    
+    if (!fullName || !username || !email || !password) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
 
     const existingUser = await User.findOne({ username });
     if (existingUser) {
       return res.status(400).json({ error: "Username is already taken" });
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+.[^\s@]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
     if (!emailRegex.test(email)) {
       return res.status(400).json({ error: "Invalid email format" });
     }
-    
+
     const existingEmail = await User.findOne({ email });
     if (existingEmail) {
       return res.status(400).json({ error: "Email is already taken" });
