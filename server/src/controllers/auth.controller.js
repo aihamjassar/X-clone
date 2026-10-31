@@ -15,7 +15,7 @@ exports.checkAuth = async (req, res) => {
 exports.signup = async (req, res) => {
   try {
     const { fullName, username, email, password } = req.body;
-    
+
     if (!fullName || !username || !email || !password) {
       return res.status(400).json({ error: "All fields are required" });
     }
@@ -127,7 +127,12 @@ exports.login = async (req, res) => {
 
 exports.logout = async (req, res) => {
   try {
-    res.cookie("jwt", "", { maxAge: 0 });
+    res.clearCookie("jwt", {
+      httpOnly: true,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+    });
     res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
     console.error("Error in logout controller:", error.message);

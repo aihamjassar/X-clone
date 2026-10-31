@@ -1,6 +1,8 @@
-import { BellIcon, HomeIcon, LogOutIcon, UserIcon } from "lucide-react";
 import { Link } from "react-router";
+import { useMutation } from "@tanstack/react-query";
+import { BellIcon, HomeIcon, LogOutIcon, UserIcon } from "lucide-react";
 import { XSvg } from "../svgs/X";
+import { toast } from "../ui/toast";
 
 const data = {
   fullName: "John Doe",
@@ -27,6 +29,34 @@ const SIDEBAR_ITEMS = [
 ];
 
 export function Sidebar() {
+  const { mutate: logout } = useMutation({
+    mutationFn: async () => {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/auth/logout`,
+        {
+          method: "POST",
+          credentials: "include",
+        },
+      );
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "Failed to logout");
+    },
+    onSuccess: () => {
+      toast.add({
+        type: "success",
+        title: "Logout",
+        description: "Logged out successfully",
+      });
+    },
+    onError: (error) => {
+      toast.add({
+        type: "error",
+        title: "Logout",
+        description: error.message,
+      });
+    },
+  });
   return (
     <div className="md:flex-[2_2_0] w-18 max-w-52">
       <div className="sticky top-0 left-0 h-screen flex flex-col border-r border-gray-700 w-20 md:w-full">
@@ -63,7 +93,13 @@ export function Sidebar() {
                 </p>
                 <p className="text-slate-500">@{data?.username}</p>
               </div>
-              <LogOutIcon className="size-5 cursor-pointer" />
+              <LogOutIcon
+                className="size-5 cursor-pointer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  logout();
+                }}
+              />
             </div>
           </Link>
         )}

@@ -37,7 +37,12 @@ export function SignupPage() {
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
   const [showPassword, setShowPassword] = useState(false);
 
-  const { mutate, isPending, isError, error } = useMutation({
+  const {
+    mutate: signup,
+    isPending,
+    isError,
+    error,
+  } = useMutation({
     mutationFn: async ({ fullName, username, email, password }) => {
       const res = await fetch(
         `${import.meta.env.VITE_API_BASE_URL}/auth/signup`,
@@ -47,6 +52,7 @@ export function SignupPage() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ fullName, username, email, password }),
+          credentials: "include",
         },
       );
 
@@ -69,7 +75,7 @@ export function SignupPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    mutate(formData);
+    signup(formData);
   };
 
   return (

@@ -27,7 +27,12 @@ export function LoginPage() {
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
   const [showPassword, setShowPassword] = useState(false);
 
-  const { mutate, isPending, isError, error } = useMutation({
+  const {
+    mutate: login,
+    isPending,
+    isError,
+    error,
+  } = useMutation({
     mutationFn: async ({ username, password }) => {
       const res = await fetch(
         `${import.meta.env.VITE_API_BASE_URL}/auth/login`,
@@ -37,6 +42,7 @@ export function LoginPage() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ username, password }),
+          credentials: "include",
         },
       );
 
@@ -59,8 +65,9 @@ export function LoginPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    mutate(formData);
+    login(formData);
   };
+
   return (
     <div className="max-w-7xl mx-auto flex h-screen px-10">
       <div className="flex-1 hidden lg:flex items-center justify-center">
