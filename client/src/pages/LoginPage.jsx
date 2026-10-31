@@ -1,4 +1,5 @@
-import { EyeIcon, EyeOffIcon, LockIcon, MailIcon } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { EyeIcon, EyeOffIcon, LockIcon, UserIcon } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router";
 import { XSvg } from "../components/svgs/X";
@@ -15,17 +16,42 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "../components/ui/input-group";
+import { toast } from "../components/ui/toast";
 
 const INITIAL_FORM_DATA = {
-  email: "",
+  username: "",
   password: "",
 };
 
 export function LoginPage() {
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
   const [showPassword, setShowPassword] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { mutate, isPending, isError, error } = useMutation({
+    mutationFn: async ({ username, password }) => {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/auth/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, password }),
+        },
+      );
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "Failed to login");
+    },
+    onSuccess: () => {
+      setFormData(INITIAL_FORM_DATA);
+      toast.add({
+        type: "success",
+        title: "Login",
+        description: "Logged in successfully",
+      });
+    },
+  });
 
   const handleInputChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -33,8 +59,7 @@ export function LoginPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log({ formData });
-    setFormData(INITIAL_FORM_DATA);
+    mutate(formData);
   };
   return (
     <div className="max-w-7xl mx-auto flex h-screen px-10">
@@ -50,21 +75,21 @@ export function LoginPage() {
           <h1 className="text-4xl font-extrabold text-white">Let's go.</h1>
           <FieldGroup>
             <Field>
-              <FieldLabel htmlFor="email" className="sr-only">
-                Email
+              <FieldLabel htmlFor="username" className="sr-only">
+                Username
               </FieldLabel>
               <InputGroup>
                 <InputGroupInput
-                  id="email"
-                  type="email"
-                  name="email"
-                  autoComplete="email"
-                  placeholder="Email"
-                  value={formData.email}
+                  id="username"
+                  type="text"
+                  name="username"
+                  autoComplete="username"
+                  placeholder="Username"
+                  value={formData.username}
                   onChange={handleInputChange}
                 />
                 <InputGroupAddon>
-                  <MailIcon />
+                  <UserIcon />
                 </InputGroupAddon>
               </InputGroup>
             </Field>
@@ -100,12 +125,12 @@ export function LoginPage() {
             <Field>
               <Button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isPending}
                 className="cursor-pointer"
               >
-                {isSubmitting ? "Logging in..." : "Login"}
+                {isPending ? "Logging in..." : "Login"}
               </Button>
-              {isError && <FieldError>Something went wrong</FieldError>}
+              {isError && <FieldError>{error.message}</FieldError>}
             </Field>
             <Field>
               <p className="text-white text-lg">Don't have an account?</p>

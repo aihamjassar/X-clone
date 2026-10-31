@@ -39,29 +39,27 @@ export function SignupPage() {
 
   const { mutate, isPending, isError, error } = useMutation({
     mutationFn: async ({ fullName, username, email, password }) => {
-      try {
-        const res = await fetch(
-          `${import.meta.env.VITE_API_BASE_URL}/auth/signup`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ fullName, username, email, password }),
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/auth/signup`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
           },
-        );
+          body: JSON.stringify({ fullName, username, email, password }),
+        },
+      );
 
-        const data = await res.json();
-        if (!res.ok) throw new Error(data?.error || "Failed to sign up");
-
-        return data;
-      } catch (error) {
-        console.error("Failed to sign up:", error.message);
-        throw error;
-      }
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "Failed to sign up");
     },
     onSuccess: () => {
-      toast.add({ type: "success", description: "User created successfully" });
+      setFormData(INITIAL_FORM_DATA);
+      toast.add({
+        type: "success",
+        title: "Sign up",
+        description: "Signed up successfully",
+      });
     },
   });
 
@@ -72,7 +70,6 @@ export function SignupPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     mutate(formData);
-    setFormData(INITIAL_FORM_DATA);
   };
 
   return (
