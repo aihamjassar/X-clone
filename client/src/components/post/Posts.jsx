@@ -1,9 +1,31 @@
-import { POSTS } from "../../utils/db/dummy";
+import { useQuery } from "@tanstack/react-query";
 import { Post } from "../post/Post";
 import { PostSkeleton } from "../skeletons/PostSkeleton";
 
-export function Posts() {
-  const isLoading = false;
+export function Posts({ feedType }) {
+  const endpoint = feedType === "following" ? "following" : "all";
+
+  const {
+    data: posts,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: [`posts/${feedType}`],
+    queryFn: async () => {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/posts/${endpoint}`,
+        {
+          credentials: "include",
+        },
+      );
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Something went wrong");
+
+      return data;
+    },
+    staleTime: 1000 * 60,
+  });
 
   return (
     <>
@@ -14,12 +36,15 @@ export function Posts() {
           <PostSkeleton />
         </div>
       )}
-      {!isLoading && POSTS?.length === 0 && (
-        <p>No posts in this tab. Switch 👻</p>
+      {!isLoading && posts?.length === 0 && (
+        <p className="p-4 text-center">No posts in this tab. Switch 👻</p>
       )}
-      {!isLoading && POSTS && (
+      {isError && (
+        <p className="p-4 text-center text-red-500">Error: {error.message}</p>
+      )}
+      {!isLoading && posts && (
         <div>
-          {POSTS.map((post) => (
+          {posts.map((post) => (
             <Post key={post._id} post={post} />
           ))}
         </div>

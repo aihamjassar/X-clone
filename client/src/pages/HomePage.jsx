@@ -32,7 +32,7 @@ export function HomePage() {
         {/* Create post input */}
         <CreatePost />
         {/* Posts */}
-        <Posts />
+        <Posts feedType={feedType} />
       </div>
     </>
   );

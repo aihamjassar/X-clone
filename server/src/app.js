@@ -20,6 +20,12 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  }),
+);
 
 app.get("/health", (req, res) => res.status(200).send("OK"));
 
@@ -36,5 +42,7 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/posts", postRoutes);
 app.use("/api/v1/notification", notificationRoutes);
+
+app.use((req, res) => res.status(404).json({ error: "Route not found" }));
 
 module.exports = app;
