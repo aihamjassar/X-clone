@@ -1,0 +1,16 @@
+info:
+  name: Like/Unlike Post
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{base_url}}/posts/like/6adcf2d992ac4d0863b3db4a"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
