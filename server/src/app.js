@@ -1,5 +1,6 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
+const cors = require("cors");
 const { v2: cloudinary } = require("cloudinary");
 
 const authRoutes = require("./routes/auth.route");
