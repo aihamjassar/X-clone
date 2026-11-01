@@ -23,7 +23,7 @@ import {
   InputGroupInput,
 } from "../components/ui/input-group";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "../components/ui/toast";
 
 const INITIAL_FORM_DATA = {
@@ -36,6 +36,8 @@ const INITIAL_FORM_DATA = {
 export function SignupPage() {
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
   const [showPassword, setShowPassword] = useState(false);
+
+  const queryClient = useQueryClient();
 
   const {
     mutate: signup,
@@ -66,6 +68,7 @@ export function SignupPage() {
         title: "Sign up",
         description: "Signed up successfully",
       });
+      queryClient.invalidateQueries({ queryKey: ["authUser"] });
     },
   });
 

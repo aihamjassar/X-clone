@@ -6,7 +6,13 @@ import App from "./App.jsx";
 import { BrowserRouter } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "./components/ui/toast.jsx";
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refreshOnWindowFocus: false,
+    },
+  },
+});
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>

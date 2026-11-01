@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { EyeIcon, EyeOffIcon, LockIcon, UserIcon } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router";
@@ -26,6 +26,8 @@ const INITIAL_FORM_DATA = {
 export function LoginPage() {
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
   const [showPassword, setShowPassword] = useState(false);
+
+  const queryClient = useQueryClient();
 
   const {
     mutate: login,
@@ -56,6 +58,7 @@ export function LoginPage() {
         title: "Login",
         description: "Logged in successfully",
       });
+      queryClient.invalidateQueries({ queryKey: ["authUser"] });
     },
   });
 

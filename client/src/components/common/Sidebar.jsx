@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { BellIcon, HomeIcon, LogOutIcon, UserIcon } from "lucide-react";
 import { XSvg } from "../svgs/X";
 import { toast } from "../ui/toast";
@@ -29,6 +29,9 @@ const SIDEBAR_ITEMS = [
 ];
 
 export function Sidebar() {
+  const queryClient = useQueryClient();
+  const { data: authUser } = useQuery({ queryKey: ["authUser"] });
+
   const { mutate: logout } = useMutation({
     mutationFn: async () => {
       const res = await fetch(
@@ -48,6 +51,7 @@ export function Sidebar() {
         title: "Logout",
         description: "Logged out successfully",
       });
+      queryClient.invalidateQueries({ queryKey: ["authUser"] });
     },
     onError: (error) => {
       toast.add({
@@ -57,6 +61,7 @@ export function Sidebar() {
       });
     },
   });
+
   return (
     <div className="md:flex-[2_2_0] w-18 max-w-52">
       <div className="sticky top-0 left-0 h-screen flex flex-col border-r border-gray-700 w-20 md:w-full">
@@ -76,22 +81,25 @@ export function Sidebar() {
             </li>
           ))}
         </ul>
-        {data && (
+        {authUser && (
           <Link
-            to={`/profile/${data.username}`}
+            to={`/profile/${authUser.username}`}
             className="mt-auto mb-10 flex gap-2 items-start transition-all duration-300 hover:bg-[#181818] py-2 px-4 rounded-full"
           >
-            <div className="hidden md:inline-flex">
-              <div className="w-8 rounded-full">
-                <img src={data?.profileImg || "/avatar-placeholder.png"} />
+            <div className="hidden rounded-full md:inline-flex">
+              <div className="size-8 rounded-full">
+                <img
+                  src={authUser?.profileImg || "/avatar-placeholder.png"}
+                  className="rounded-full"
+                />
               </div>
             </div>
             <div className="flex justify-between flex-1">
               <div className="hidden md:block">
                 <p className="text-white font-bold text-sm w-20 truncate">
-                  {data?.fullName}
+                  {authUser?.fullName}
                 </p>
-                <p className="text-slate-500">@{data?.username}</p>
+                <p className="text-slate-500">@{authUser?.username}</p>
               </div>
               <LogOutIcon
                 className="size-5 cursor-pointer"
