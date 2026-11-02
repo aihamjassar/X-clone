@@ -1,36 +1,30 @@
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { BellIcon, HomeIcon, LogOutIcon, UserIcon } from "lucide-react";
 import { XSvg } from "../svgs/X";
 import { toast } from "../ui/toast";
 
-const data = {
-  fullName: "John Doe",
-  username: "johndoe",
-  profileImg: "/avatars/boy1.png",
-};
-
-const SIDEBAR_ITEMS = [
-  {
-    href: "/",
-    Icon: HomeIcon,
-    text: "Home",
-  },
-  {
-    href: "/notifications",
-    Icon: BellIcon,
-    text: "Notifications",
-  },
-  {
-    href: `/profile/${data.username}`,
-    Icon: UserIcon,
-    text: "Profile",
-  },
-];
-
 export function Sidebar() {
   const queryClient = useQueryClient();
   const { data: authUser } = useQuery({ queryKey: ["authUser"] });
+
+  const sidebarItems = [
+    {
+      href: "/",
+      Icon: HomeIcon,
+      text: "Home",
+    },
+    {
+      href: "/notifications",
+      Icon: BellIcon,
+      text: "Notifications",
+    },
+    {
+      href: authUser ? `/profile/${authUser.username}` : "/",
+      Icon: UserIcon,
+      text: "Profile",
+    },
+  ];
 
   const { mutate: logout } = useMutation({
     mutationFn: async () => {
@@ -69,7 +63,7 @@ export function Sidebar() {
           <XSvg className="px-2 size-12 rounded-full fill-white hover:bg-stone-900" />
         </Link>
         <ul className="flex flex-col gap3 mt-4">
-          {SIDEBAR_ITEMS.map(({ href, Icon, text }) => (
+          {sidebarItems.map(({ href, Icon, text }) => (
             <li className="flex justify-center md:justify-start" key={href}>
               <Link
                 to={href}

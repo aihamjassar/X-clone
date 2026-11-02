@@ -11,7 +11,7 @@ export function Posts({ feedType }) {
     isError,
     error,
   } = useQuery({
-    queryKey: [`posts/${feedType}`],
+    queryKey: ["posts", feedType],
     queryFn: async () => {
       const res = await fetch(
         `${import.meta.env.VITE_API_BASE_URL}/posts/${endpoint}`,

@@ -6,7 +6,7 @@ import {
   TrashIcon,
 } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -17,27 +17,121 @@ import {
 } from "../ui/dialog";
 import { Spinner } from "../ui/spinner";
 import { Textarea } from "../ui/textarea";
+import { toast } from "../ui/toast";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function Post({ post }) {
   const [comment, setComment] = useState("");
+  const { data: authUser } = useQuery({ queryKey: ["authUser"] });
+  const queryClient = useQueryClient();
+
   const postOwner = post.user;
-  const isLiked = false;
-
-  const isMyPost = true;
-
+  const likedPosts = authUser?.likedPosts ?? [];
+  const isLiked = likedPosts.includes(post._id);
+  const isMyPost = authUser?._id === postOwner?._id;
   const formatDate = "1h";
-
   const isCommenting = false;
 
-  const handleDeletePost = () => {};
+  const { mutate: deletePost, isPending } = useMutation({
+    mutationFn: async (postId) => {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/posts/${postId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        },
+      );
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data?.error || "Something went wrong");
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["posts"]);
+      toast.add({
+        type: "success",
+        title: "Post",
+        description: "Post deleted successfully",
+      });
+    },
+    onError: (error) => {
+      toast.add({ type: "error", title: "Post", description: error.message });
+    },
+  });
+
+  const { mutate: postComment } = useMutation({
+    mutationFn: async ({ text, postId }) => {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/posts/comment/${postId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ text }),
+        },
+      );
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "Something went wrong");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["posts"]);
+      setComment("");
+      toast.add({
+        type: "success",
+        title: "Comment",
+        description: "Comment added successfully",
+      });
+    },
+    onError: (error) => {
+      toast.add({
+        type: "error",
+        title: "Comment",
+        description: error?.message,
+      });
+    },
+  });
+
+  const { mutate: likePost } = useMutation({
+    mutationFn: async (postId) => {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/posts/like/${postId}`,
+        {
+          method: "POST",
+          credentials: "include",
+        },
+      );
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "Something went wrong");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+    onError: (error) => {
+      toast.add({
+        type: "error",
+        title: "Like post",
+        description: error?.message,
+      });
+    },
+  });
+
+  const handleDeletePost = () => {
+    deletePost(post._id);
+  };
 
   const handlePostComment = (e) => {
     e.preventDefault();
-    console.log(comment);
-    setComment("");
+    postComment({ text: comment, postId: post._id });
   };
 
-  const handleLikePost = () => {};
+  const handleLikePost = () => {
+    likePost(post._id);
+  };
 
   return (
     <>
@@ -64,10 +158,14 @@ export function Post({ post }) {
             </span>
             {isMyPost && (
               <span className="flex-1 flex justify-end">
-                <TrashIcon
-                  className="cursor-pointer hover:text-red-500"
-                  onClick={handleDeletePost}
-                />
+                {isPending ? (
+                  <Spinner />
+                ) : (
+                  <TrashIcon
+                    className="cursor-pointer hover:text-red-500"
+                    onClick={handleDeletePost}
+                  />
+                )}
               </span>
             )}
           </div>

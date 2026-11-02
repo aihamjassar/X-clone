@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import { SettingsIcon, UserIcon, HeartIcon } from "lucide-react";
 import { Spinner } from "../components/ui/spinner";
 import {

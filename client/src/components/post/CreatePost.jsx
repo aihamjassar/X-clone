@@ -2,24 +2,56 @@ import { ImageIcon, SmileIcon, XIcon } from "lucide-react";
 import { useRef, useState } from "react";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
+import { toast } from "../ui/toast";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function CreatePost() {
   const [text, setText] = useState("");
   const [img, setImg] = useState(null);
-
   const imgRef = useRef(null);
 
-  const isPending = false;
-  const isError = false;
+  const { data: authUser } = useQuery({ queryKey: ["authUser"] });
+  const queryClient = useQueryClient();
 
-  const data = {
-    profileImg: "/avatars/boy1.png",
-  };
+  const {
+    mutate: createPost,
+    isPending,
+    isError,
+  } = useMutation({
+    mutationFn: async ({ text, img }) => {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/posts/create`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ text, img }),
+        },
+      );
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert("Post create successfully");
-  };
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "Something went wrong");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      toast.add({
+        type: "success",
+        title: "Post",
+        description: "Post created successfully",
+      });
+      setText("");
+      setImg(null);
+    },
+    onError: (error) => {
+      toast.add({
+        type: "error",
+        title: "Post",
+        description: error.message,
+      });
+    },
+  });
 
   const handleImgChange = (e) => {
     const file = e.target.files[0];
@@ -32,11 +64,19 @@ export function CreatePost() {
     }
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    createPost({ text, img });
+  };
+
   return (
     <div className="flex p-4 items-start gap-4 border-b border-gray-700">
       <div>
         <div className="w-8 rounded-full">
-          <img src={data.profileImg || "/avatar-placeholder.png"} alt="" />
+          <img
+            src={authUser?.profileImg || "/avatar-placeholder.png"}
+            alt=""
+          />
         </div>
       </div>
       <form className="flex flex-col gap-2 w-full" onSubmit={handleSubmit}>
@@ -85,7 +125,7 @@ export function CreatePost() {
             {isPending ? "Posting..." : "Post"}
           </Button>
         </div>
-        {isError && <div className="text-read-500">Something went wrong</div>}
+        {isError && <div className="text-red-500">Something went wrong</div>}
       </form>
     </div>
   );
