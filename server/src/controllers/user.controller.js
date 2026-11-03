@@ -39,7 +39,6 @@ exports.getSuggestedUsers = async (req, res) => {
       },
       {
         $project: {
-          _id: 0,
           username: 1,
           fullName: 1,
           profileImg: 1,
@@ -61,7 +60,7 @@ exports.getSuggestedUsers = async (req, res) => {
 exports.followUnfollowUser = async (req, res) => {
   try {
     const { id } = req.params;
-
+ 
     const userToModify = await User.findById(id);
     const currentUser = await User.findById(req.user._id);
     if (!userToModify || !currentUser)

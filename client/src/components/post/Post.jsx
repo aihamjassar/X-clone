@@ -30,9 +30,8 @@ export function Post({ post }) {
   const isLiked = likedPosts.includes(post._id);
   const isMyPost = authUser?._id === postOwner?._id;
   const formatDate = "1h";
-  const isCommenting = false;
 
-  const { mutate: deletePost, isPending } = useMutation({
+  const { mutate: deletePost, isPending: isDeleting } = useMutation({
     mutationFn: async (postId) => {
       const res = await fetch(
         `${import.meta.env.VITE_API_BASE_URL}/posts/${postId}`,
@@ -48,7 +47,7 @@ export function Post({ post }) {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["posts"]);
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
       toast.add({
         type: "success",
         title: "Post",
@@ -60,7 +59,7 @@ export function Post({ post }) {
     },
   });
 
-  const { mutate: postComment } = useMutation({
+  const { mutate: postComment, isPending: isCommenting } = useMutation({
     mutationFn: async ({ text, postId }) => {
       const res = await fetch(
         `${import.meta.env.VITE_API_BASE_URL}/posts/comment/${postId}`,
@@ -78,7 +77,7 @@ export function Post({ post }) {
       if (!res.ok) throw new Error(data?.error || "Something went wrong");
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["posts"]);
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
       setComment("");
       toast.add({
         type: "success",
@@ -95,7 +94,7 @@ export function Post({ post }) {
     },
   });
 
-  const { mutate: likePost } = useMutation({
+  const { mutate: likePost, isPending: isLiking } = useMutation({
     mutationFn: async (postId) => {
       const res = await fetch(
         `${import.meta.env.VITE_API_BASE_URL}/posts/like/${postId}`,
@@ -107,9 +106,23 @@ export function Post({ post }) {
 
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "Something went wrong");
+
+      return data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    onSuccess: (updatedLikes) => {
+      queryClient.setQueryData(["posts", "forYou"], (oldData = []) => {
+        return oldData.map((p) =>
+          p._id === post._id ? { ...p, likes: updatedLikes } : p,
+        );
+      });
+
+      queryClient.setQueryData(["posts", "following"], (oldData = []) => {
+        return oldData.map((p) =>
+          p._id === post._id ? { ...p, likes: updatedLikes } : p,
+        );
+      });
+
+      queryClient.invalidateQueries({ queryKey: ["authUser"] });
     },
     onError: (error) => {
       toast.add({
@@ -121,15 +134,18 @@ export function Post({ post }) {
   });
 
   const handleDeletePost = () => {
+    if (isDeleting) return;
     deletePost(post._id);
   };
 
   const handlePostComment = (e) => {
     e.preventDefault();
+    if (isCommenting) return;
     postComment({ text: comment, postId: post._id });
   };
 
   const handleLikePost = () => {
+    if (isLiking) return;
     likePost(post._id);
   };
 
@@ -158,7 +174,7 @@ export function Post({ post }) {
             </span>
             {isMyPost && (
               <span className="flex-1 flex justify-end">
-                {isPending ? (
+                {isDeleting ? (
                   <Spinner />
                 ) : (
                   <TrashIcon
@@ -228,7 +244,10 @@ export function Post({ post }) {
                       value={comment}
                       onChange={(e) => setComment(e.target.value)}
                     />
-                    <Button type="submit">
+                    <Button
+                      type="submit"
+                      disabled={!comment.trim() || isCommenting}
+                    >
                       {isCommenting ? <Spinner /> : "Post"}
                     </Button>
                   </form>
@@ -245,19 +264,22 @@ export function Post({ post }) {
               className="flex gap-1 items-center cursor-pointer group"
               onClick={handleLikePost}
             >
-              {!isLiked && (
+              {!isLiked && !isLiking && (
                 <HeartIcon className="w-4 h-4 cursor-pointer text-slate-500 group-hover:text-pink-500" />
               )}
-              {isLiked && (
+              {isLiked && !isLiking && (
                 <HeartIcon className="w-4 h-4 cursor-pointer text-pink-500 " />
               )}
-              <span
-                className={`text-sm text-slate-500 group-hover:text-pink-500 ${
-                  isLiked ? "text-pink-500" : ""
-                }`}
-              >
-                {post.likes.length}
-              </span>
+              {!isLiking && (
+                <span
+                  className={`text-sm group-hover:text-pink-500 ${
+                    isLiked ? "text-pink-500" : ""
+                  }`}
+                >
+                  {post?.likes?.length ?? 0}
+                </span>
+              )}
+              {isLiking && <Spinner />}
             </div>
             <div className="flex justify-end gap-2 items-center">
               <BookmarkIcon className="w-4 h-4 text-slate-500 cursor-pointer" />

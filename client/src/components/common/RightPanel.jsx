@@ -3,7 +3,11 @@ import { Button } from "../ui/button";
 import { RightPanelSkeleton } from "../skeletons/RightPanelSkeleton";
 import { useQuery } from "@tanstack/react-query";
 
+import { useFollowUser } from "../../hooks/useFollowUser";
+import { Spinner } from "../ui/spinner";
+
 export function RightPanel() {
+  const { followUser, isPending } = useFollowUser();
   const { data: suggestedUsers, isLoading } = useQuery({
     queryKey: ["suggestedUsers"],
     queryFn: async () => {
@@ -69,9 +73,12 @@ export function RightPanel() {
                     type="button"
                     className="cursor-pointer"
                     size="sm"
-                    onClick={(e) => e.preventDefault()}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      followUser(user?._id);
+                    }}
                   >
-                    Follow
+                    {isPending ? <Spinner /> : "Follow"}
                   </Button>
                 </div>
               </Link>
