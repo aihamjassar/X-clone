@@ -17,7 +17,7 @@ cloudinary.config({
 
 const app = express();
 
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(
@@ -41,7 +41,7 @@ app.get("/ready", async (req, res) => {
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/posts", postRoutes);
-app.use("/api/v1/notification", notificationRoutes);
+app.use("/api/v1/notifications", notificationRoutes);
 
 app.use((req, res) => res.status(404).json({ error: "Route not found" }));
 

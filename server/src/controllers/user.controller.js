@@ -60,7 +60,7 @@ exports.getSuggestedUsers = async (req, res) => {
 exports.followUnfollowUser = async (req, res) => {
   try {
     const { id } = req.params;
- 
+
     const userToModify = await User.findById(id);
     const currentUser = await User.findById(req.user._id);
     if (!userToModify || !currentUser)
@@ -112,7 +112,7 @@ exports.updateUserProfile = async (req, res) => {
 
     if (username) {
       const existingUser = await User.findOne({ username });
-      if (existingUser) {
+      if (existingUser && username !== user.username) {
         return res.status(400).json({ error: "Username is already taken" });
       }
     }
@@ -124,7 +124,7 @@ exports.updateUserProfile = async (req, res) => {
       }
 
       const existingEmail = await User.findOne({ email });
-      if (existingEmail) {
+      if (existingEmail && email !== user.email) {
         return res.status(400).json({ error: "Email is already taken" });
       }
     }
@@ -157,12 +157,13 @@ exports.updateUserProfile = async (req, res) => {
 
     if (profileImg) {
       if (user.profileImg) {
+        console.log({ profileImg });
         await cloudinary.uploader.destroy(
           user.profileImg.split("/").pop().split(".")[0],
         );
       }
       const uploadedResponse = await cloudinary.uploader.upload(profileImg);
-      profileImg = uploadedResponse.secret_url;
+      profileImg = uploadedResponse.secure_url;
     }
 
     if (coverImg) {
@@ -172,7 +173,7 @@ exports.updateUserProfile = async (req, res) => {
         );
       }
       const uploadedResponse = await cloudinary.uploader.upload(coverImg);
-      coverImg = uploadedResponse.secret_url;
+      coverImg = uploadedResponse.secure_url;
     }
 
     const updatedUser = await User.findOneAndUpdate(user._id, {
@@ -188,7 +189,7 @@ exports.updateUserProfile = async (req, res) => {
 
     res.status(200).json(updatedUser);
   } catch (error) {
-    console.error("Error in updateUserProfile controller:", error.message);
+    console.error("Error in updateUserProfile controller:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };

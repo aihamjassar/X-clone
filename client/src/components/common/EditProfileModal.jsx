@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useUpdateProfile } from "../../hooks/useUpdateProfile";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -13,26 +15,33 @@ import { Field, FieldGroup, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 
-const INITIAL_FORM_DATA = {
-  fullName: "",
-  username: "",
-  email: "",
-  bio: "",
-  link: "",
-  newPassword: "",
-  currentPassword: "",
-};
-
 export function EditProfileModal() {
+  const { data: authUser } = useQuery({ queryKey: ["authUser"] });
+  const INITIAL_FORM_DATA = {
+    fullName: authUser?.fullName ?? "",
+    username: authUser?.username ?? "",
+    email: authUser?.email ?? "",
+    bio: authUser?.bio ?? "",
+    link: authUser?.link ?? "",
+    newPassword: "",
+    currentPassword: "",
+  };
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
 
-  const handleInputChange = (e) => {
+  const { updateProfile, isUpdatingProfile, isSuccess } = useUpdateProfile();
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setFormData(INITIAL_FORM_DATA);
+  }, [authUser]);
+
+  function handleInputChange(e) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  }
 
   const handleUpdate = () => {
-    alert("Updated Successfully");
-    setFormData(INITIAL_FORM_DATA);
+    updateProfile(formData);
+    if (isSuccess) setFormData(INITIAL_FORM_DATA);
   };
 
   return (
@@ -153,8 +162,13 @@ export function EditProfileModal() {
         </form>
         <DialogFooter>
           <DialogClose render={<Button variant="outline">Close</Button>} />
-          <Button type="button" onClick={handleUpdate}>
-            Update
+          <Button
+            type="button"
+            disabled={isUpdatingProfile}
+            onClick={handleUpdate}
+            className="cursor-pointer"
+          >
+            {isUpdatingProfile ? "Updating..." : "Update"}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -1,12 +1,27 @@
 import { useQuery } from "@tanstack/react-query";
 import { Post } from "../post/Post";
 import { PostSkeleton } from "../skeletons/PostSkeleton";
+import { useEffect } from "react";
 
-export function Posts({ feedType }) {
-  const endpoint = feedType === "following" ? "following" : "all";
+export function Posts({ feedType, userId, username }) {
+  let endpoint;
+  switch (feedType) {
+    case "following":
+      endpoint = "following";
+      break;
+    case "likes":
+      endpoint = `likes/${userId}`;
+      break;
+    case "posts":
+      endpoint = `user/${username}`;
+      break;
+    default:
+      endpoint = "all";
+  }
 
   const {
     data: posts,
+    refetch,
     isLoading,
     isError,
     error,
@@ -26,6 +41,10 @@ export function Posts({ feedType }) {
     },
     staleTime: 1000 * 60,
   });
+
+  useEffect(() => {
+    refetch();
+  }, [feedType, username, userId, refetch]);
 
   return (
     <>

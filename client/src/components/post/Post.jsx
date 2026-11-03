@@ -123,6 +123,18 @@ export function Post({ post }) {
         );
       });
 
+      queryClient.setQueryData(["posts", "posts"], (oldData = []) => {
+        return oldData.map((p) =>
+          p._id === post._id ? { ...p, likes: updatedLikes } : p,
+        );
+      });
+
+      queryClient.setQueryData(["posts", "likes"], (oldData = []) => {
+        return oldData.map((p) =>
+          p._id === post._id ? { ...p, likes: updatedLikes } : p,
+        );
+      });
+
       queryClient.invalidateQueries({ queryKey: ["authUser"] });
     },
     onError: (error) => {
