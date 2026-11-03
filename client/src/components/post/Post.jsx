@@ -19,6 +19,7 @@ import { Spinner } from "../ui/spinner";
 import { Textarea } from "../ui/textarea";
 import { toast } from "../ui/toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { formatPostDate } from "../../utils/formatDate";
 
 export function Post({ post }) {
   const [comment, setComment] = useState("");
@@ -29,7 +30,7 @@ export function Post({ post }) {
   const likedPosts = authUser?.likedPosts ?? [];
   const isLiked = likedPosts.includes(post._id);
   const isMyPost = authUser?._id === postOwner?._id;
-  const formatDate = "1h";
+  const formatDate = formatPostDate(post?.createdAt);
 
   const { mutate: deletePost, isPending: isDeleting } = useMutation({
     mutationFn: async (postId) => {
