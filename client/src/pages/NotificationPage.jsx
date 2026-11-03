@@ -8,33 +8,58 @@ import {
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu";
 import { Button } from "../components/ui/button";
+import { toast } from "../components/ui/toast";
+
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function NotificationPage() {
-  const isLoading = false;
-  const notifications = [
-    {
-      _id: "1",
-      from: {
-        _id: "1",
-        username: "johndoe",
-        profileImg: "/avatars/boy2.png",
-      },
-      type: "follow",
-    },
-    {
-      _id: "2",
-      from: {
-        _id: "2",
-        username: "janedoe",
-        profileImg: "/avatars/girl1.png",
-      },
-      type: "like",
-    },
-  ];
+  const queryClient = useQueryClient();
 
-  const deleteNotifications = () => {
-    alert("All notifications deleted");
-  };
+  const { data: notifications, isLoading } = useQuery({
+    queryKey: ["notifications"],
+    queryFn: async () => {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/notifications`,
+        {
+          credentials: "include",
+        },
+      );
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "Something went wrong");
+
+      return data;
+    },
+  });
+
+  const { mutate: deleteNotifications } = useMutation({
+    mutationFn: async () => {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/notifications`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        },
+      );
+
+      if (!res.ok) throw new Error("Something went wrong");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      toast.add({
+        type: "success",
+        title: "Notifications",
+        description: "Notifications deleted successfully",
+      });
+    },
+    onError: () => {
+      toast.add({
+        type: "error",
+        title: "Notifications",
+        description: "Failed to delete notifications",
+      });
+    },
+  });
 
   return (
     <>
@@ -66,12 +91,15 @@ export function NotificationPage() {
           <div className="border-b border-gray-700" key={notification._id}>
             <div className="flex gap-2 p-4">
               {notification.type === "follow" && (
-                <UserIcon className="w-7 h-7 text-primary" />
+                <UserIcon className="w-7 h-7 text-blue-500 fill-blue-500" />
               )}
               {notification.type === "like" && (
-                <HeartIcon className="w-7 h-7 text-red-500" />
+                <HeartIcon className="w-7 h-7 text-red-500 fill-red-500" />
               )}
-              <Link to={`/profile/${notification.from.username}`} className="flex gap-2">
+              <Link
+                to={`/profile/${notification.from.username}`}
+                className="flex gap-2"
+              >
                 <div className="avatar">
                   <div className="w-8 rounded-full">
                     <img
