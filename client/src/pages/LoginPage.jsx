@@ -36,17 +36,14 @@ export function LoginPage() {
     error,
   } = useMutation({
     mutationFn: async ({ username, password }) => {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/auth/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ username, password }),
-          credentials: "include",
+      const res = await fetch(`/api/v1/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({ username, password }),
+        credentials: "include",
+      });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "Failed to login");

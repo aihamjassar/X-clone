@@ -28,12 +28,9 @@ export function Posts({ feedType, userId, username }) {
   } = useQuery({
     queryKey: ["posts", feedType],
     queryFn: async () => {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/posts/${endpoint}`,
-        {
-          credentials: "include",
-        },
-      );
+      const res = await fetch(`/api/v1/posts/${endpoint}`, {
+        credentials: "include",
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Something went wrong");
 

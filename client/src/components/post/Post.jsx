@@ -34,13 +34,10 @@ export function Post({ post }) {
 
   const { mutate: deletePost, isPending: isDeleting } = useMutation({
     mutationFn: async (postId) => {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/posts/${postId}`,
-        {
-          method: "DELETE",
-          credentials: "include",
-        },
-      );
+      const res = await fetch(`/api/v1/posts/${postId}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
 
       if (!res.ok) {
         const data = await res.json();
@@ -62,17 +59,14 @@ export function Post({ post }) {
 
   const { mutate: postComment, isPending: isCommenting } = useMutation({
     mutationFn: async ({ text, postId }) => {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/posts/comment/${postId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify({ text }),
+      const res = await fetch(`/api/v1/posts/comment/${postId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        credentials: "include",
+        body: JSON.stringify({ text }),
+      });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "Something went wrong");
@@ -97,13 +91,10 @@ export function Post({ post }) {
 
   const { mutate: likePost, isPending: isLiking } = useMutation({
     mutationFn: async (postId) => {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/posts/like/${postId}`,
-        {
-          method: "POST",
-          credentials: "include",
-        },
-      );
+      const res = await fetch(`/api/v1/posts/like/${postId}`, {
+        method: "POST",
+        credentials: "include",
+      });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "Something went wrong");

@@ -11,12 +11,9 @@ export function RightPanel() {
   const { data: suggestedUsers, isLoading } = useQuery({
     queryKey: ["suggestedUsers"],
     queryFn: async () => {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/users/suggested`,
-        {
-          credentials: "include",
-        },
-      );
+      const res = await fetch(`/api/v1/users/suggested`, {
+        credentials: "include",
+      });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "Something went wrong");

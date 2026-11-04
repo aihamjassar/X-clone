@@ -28,13 +28,10 @@ export function Sidebar() {
 
   const { mutate: logout } = useMutation({
     mutationFn: async () => {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/auth/logout`,
-        {
-          method: "POST",
-          credentials: "include",
-        },
-      );
+      const res = await fetch(`/api/v1/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "Failed to logout");

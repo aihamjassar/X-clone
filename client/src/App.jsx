@@ -14,12 +14,9 @@ function App() {
   const { data: authUser, isLoading } = useQuery({
     queryKey: ["authUser"],
     queryFn: async () => {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/auth/check-auth`,
-        {
-          credentials: "include",
-        },
-      );
+      const res = await fetch(`/api/v1/auth/check-auth`, {
+        credentials: "include",
+      });
       const data = await res.json();
 
       if (data.error) return null;

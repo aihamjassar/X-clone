@@ -10,17 +10,14 @@ export function useUpdateProfile() {
     isSuccess,
   } = useMutation({
     mutationFn: async (userProfile) => {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/users/update`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify(userProfile),
+      const res = await fetch(`/api/v1/users/update`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        credentials: "include",
+        body: JSON.stringify(userProfile),
+      });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "Something went wrong");

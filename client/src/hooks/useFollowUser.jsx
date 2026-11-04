@@ -6,13 +6,10 @@ export function useFollowUser() {
 
   const { mutate: followUser, isPending } = useMutation({
     mutationFn: async (userId) => {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/users/follow/${userId}`,
-        {
-          method: "POST",
-          credentials: "include",
-        },
-      );
+      const res = await fetch(`/api/v1/users/follow/${userId}`, {
+        method: "POST",
+        credentials: "include",
+      });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "Something went wrong");

@@ -34,12 +34,9 @@ export function ProfilePage() {
   } = useQuery({
     queryKey: ["userProfile"],
     queryFn: async () => {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/users/profile/${username}`,
-        {
-          credentials: "include",
-        },
-      );
+      const res = await fetch(`/api/v1/users/profile/${username}`, {
+        credentials: "include",
+      });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "Something went wrong");

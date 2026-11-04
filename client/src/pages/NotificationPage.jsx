@@ -18,12 +18,9 @@ export function NotificationPage() {
   const { data: notifications, isLoading } = useQuery({
     queryKey: ["notifications"],
     queryFn: async () => {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/notifications`,
-        {
-          credentials: "include",
-        },
-      );
+      const res = await fetch(`/api/v1/notifications`, {
+        credentials: "include",
+      });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "Something went wrong");
@@ -34,13 +31,10 @@ export function NotificationPage() {
 
   const { mutate: deleteNotifications } = useMutation({
     mutationFn: async () => {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/notifications`,
-        {
-          method: "DELETE",
-          credentials: "include",
-        },
-      );
+      const res = await fetch(`/api/v1/notifications`, {
+        method: "DELETE",
+        credentials: "include",
+      });
 
       if (!res.ok) throw new Error("Something went wrong");
     },
